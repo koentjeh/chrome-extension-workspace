@@ -1,0 +1,27 @@
+{
+  "manifest_version": 2,
+  "name": "Workspace Configurator",
+  "version": "0.0.1",
+  "description": "Configure browser windows setups and their startup page",
+  "icons": {
+    "16": "icons/logo-16.png",
+    "24": "icons/logo-24.png",
+    "32": "icons/logo-32.png"
+  },
+  "browser_action": {
+      "default_icon": {
+        "16": "icons/logo-16.png",
+        "24": "icons/logo-24.png",
+        "32": "icons/logo-32.png"
+      },
+    "default_title": "Workspace",
+    "default_popup": "src/popup/config_select.html"
+  },
+  "options_page": "src/legacy/config_edit.html",
+  "options_ui": {
+    "page": "src/legacy/config_edit.html",
+    "open_in_tab": true
+  },
+  "offline_enabled": true,
+  "permissions": ["tabs", "storage"]
+}
