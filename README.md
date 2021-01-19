@@ -8,6 +8,8 @@ Its like setting up your startpage(s) in Chrome, but better.
 - Load your configuration, and load them again, and again, and again...
 - Load your configuration in a clean state, meaning all open Chrome tabs will be closed beforehand.
 
+> Works with multiple screens
+
 ## Installation
 
 *Not available in the Chrome Webstore.*
@@ -21,3 +23,7 @@ Make it more easily accessible by pinning the extension. *(Click on **extensions
 
 ## Contributing
 Rather not.
+
+## Usage example
+
+![Example use of extension](https://github.com/koentjeh/chrome-extension-workspace/blob/master/screenshots/example.png?raw=true)
