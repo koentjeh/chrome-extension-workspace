@@ -18,26 +18,39 @@ let data = [
     }
 ]
 
+chrome.windows.create({
+    focused: true,
+    height: screen.height,
+    width: screen.width / 2,
+    incognito: false,
+    top: 0,
+    left: 0,
+    url: 'https://jira.maxserv.com/issues/?filter=16208'
+}, (window) => {
 
-
+})
 
 chrome.windows.create({
     focused: false,
     height: screen.height,
     width: screen.width / 2,
-    incognito: true,
+    incognito: false,
     top: 0,
     left: screen.width / 2,
-    url: 'https://www.dumpert.nl?=it+works'
+    url: 'https://jira.maxserv.com/secure/Tempo.jspa#/my-work/week?type=TIME'
 }, (window) => {
 
 })
 
-chrome.tabs.create({
-    windowId: 1,
-    active: true,
-    index: 2,
-    url: "http://localhost:8080"
-}, (tab) => {
-
+chrome.windows.getCurrent((window) => {
+    chrome.windows.remove(window.id)
 })
+
+// chrome.tabs.create({
+//     windowId: 99,
+//     active: false,
+//     index: 1,
+//     url: "https://jira.maxserv.com/secure/Tempo.jspa#/my-work/week?type=TIME"
+// }, (tab) => {
+//
+// })

@@ -15,7 +15,7 @@
         "32": "icons/logo-32.png"
       },
     "default_title": "Workspace",
-    "default_popup": "src/popup/config_select.html"
+    "default_popup": "src/test/config_record.html"
   },
   "options_page": "src/legacy/config_edit.html",
   "options_ui": {

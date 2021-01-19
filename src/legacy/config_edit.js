@@ -1,154 +1,165 @@
 "use strict";
 
-// Global values
-let editorContainer = document.getElementById('editor'),
-    editor = {
-        element: editorContainer,
-        boundaries: editorContainer.getBoundingClientRect(),
-        ghost: document.getElementById('ghostpane')
-    }, captureResize = true
+// // Global values
+// let editorContainer = document.getElementById('editor'),
+//     editor = {
+//         element: editorContainer,
+//         boundaries: editorContainer.getBoundingClientRect(),
+//         ghost: document.getElementById('ghostpane')
+//     }, captureResize = true
+//
+// // Update Global values
+// window.onresize = (event) => {
+//     if (!captureResize) return
+//
+//     editor.boundaries = editor.element.getBoundingClientRect()
+//     captureResize = false
+//     setTimeout(() => { captureResize = true }, 500)
+//
+// }
 
-// Update Global values
-window.onresize = (event) => {
-    if (!captureResize) return
+let minWidth = 320, minHeight = 260;
 
-    editor.boundaries = editor.element.getBoundingClientRect()
-    captureResize = false
-    setTimeout(() => { captureResize = true }, 500)
+let resizeAnimation, resize, dragAnimation, redraw = true;
 
+let editor = document.getElementById('editor'),
+    boundaries = editor.getBoundingClientRect()
+
+
+
+let selectedWindow = {
+    current: null,
+    previous: null
+}
+function select(element) {
+    if (selectedWindow.current) {
+        selectedWindow.previous = selectedWindow.current
+    }
+    selectedWindow = element
+}
+function unselect() {
+    if (selectedWindow.current) {
+        selectedWindow.previous = selectedWindow.current
+        selectedWindow.current = null
+    }
+}
+function selected() {
+    return selectedWindow.current
+}
+function previouslySelected() {
+    return selectedWindow.previous
 }
 
 
-renderBrowser(editor.element, 50, 100, 400, 500, 'facebook.com', {active: true})
 
-
-
-
-// mouse events
-let eventState
-function onMouseHover(event, element) {
-    setElementResizeable(event, element, calculateElementBorderEdges(event, element))
-
-    animate(event, element)
-
-    eventState = event
-    redraw = true
-}
-
-let oldState, isResizing, isMoving, mouseDown = null
 function onDragStart(event, element) {
     event.preventDefault()
 
-    let borders = calculateElementBorderEdges(event, element)
+    resize = isMouseOnBorder(event, element)
 
-    isResizing = borders.onTopEdge || borders.onRightEdge || borders.onBottomEdge || borders.onLeftEdge
-
-
-    mouseDown = {
-        top: event.clientY - element.top,
-        left: event.clientX - element.left,
-        isResizing: isResizing,
-        isMoving: !isResizing && canMove(event, element),
-        onTopEdge: borders.onTopEdge,
-        onRightEdge: borders.onRightEdge,
-        onBottomEdge: borders.onBottomEdge,
-        onLeftEdge: borders.onLeftEdge
-    }
-
-    oldState = {
-        y: element.top,
-        x: element.left,
-        border: element.border,
-        isResizing: isResizing,
-        isMoving: !isResizing && canMove(event, element)
-    }
-
-}
-function onDragEnd(event, element) {
-
-}
-
-
-
-
-
-function animate(event, element) {
-    requestAnimationFrame(animate)
-
-    if (!redraw) return
-
-    redraw = false
-
-    if (oldState.isResizing) {
-
-
-
-    }
-
-    if (oldState.isMoving) {
-
-        if (element.top < editor.boundaries.top) {
-
-            if (element.left < editor.boundaries.left) {
-                setTopLeft(editor.boundaries, element)
-                editor.ghost.style.opacity = 0.2
-            } else if (element.right > editor.boundaries.right) {
-                setTopRight(editor.boundaries, element)
-                editor.ghost.style.opacity = 0.2
-            } else {
-                setTopHalf(editor.boundaries, element)
-                editor.ghost.style.opacity = 0.2
-            }
-
-        } else if (element.bottom > editor.boundaries.bottom) {
-
-            if (element.left < editor.boundaries.left) {
-                setBottomLeft(editor.boundaries, element)
-                editor.ghost.style.opacity = 0.2
-            } else if (element.right > editor.boundaries.right) {
-                setBottomRight(editor.boundaries, element)
-                editor.ghost.style.opacity = 0.2
-            } else {
-                setBottomHalf(editor.boundaries, element)
-                editor.ghost.style.opacity = 0.2
-            }
-
-        } else if (element.right > editor.boundaries.right) {
-            setRightHalf(editor.boundaries, editor.ghost)
-            editor.ghost.style.opacity = 0.2
-        } else if (element.left > editor.boundaries.left) {
-            setLeftHalf(editor.boundaries, editor.ghost)
-            editor.ghost.style.opacity = 0.2
-        } else {
-            editor.ghost.style.opacity = 0
-        }
-
-        element.style.top = (event.clientY - oldState.y) + 'px'
-        element.style.left = (event.clientX - oldState.x) + 'px'
-
+    if (resize.borderTop||resize.borderRight||resize.borderBottom||resize.borderLeft) {
+        select(element)
+        resizeElement()
         return
     }
+
+    if (isMouseInArea(event, element)) {
+        select(element)
+        dragElement()
+        return;
+    }
 }
 
-function resize(event, element) {
-
-}
-function move(event, element) {
-
+function onDrag(event, element) {
 }
 
+function onDragEnd(event, element) {
+    if (resizeAnimation) {
+        window.cancelAnimationFrame(resizeAnimation)
+        resizeAnimation = null
+    }
+    if (dragAnimation) {
+        window.cancelAnimationFrame(dragAnimation)
+        dragAnimation = null
+    }
 
-
-
-
-
-
-
-
-//content
-function setActiveTabTitle(title) {
-    document.getElementById('browser-active-title').innerText = title
+    unselect()
 }
+
+function resizeElement() {
+    resizeAnimation = window.requestAnimationFrame(resizeElement)
+
+    // if (!redraw  return // nothing changed
+    // redraw = false // redraw once
+
+    console.log('test')
+
+    let element = selected(),
+        boundaries = element.getBoundingClientRect()
+
+    console.log(resize.borderRight)
+
+    if (resize.borderRight) {
+        console.log('DO!')
+        element.style.width = Math.max(event.clientX - boundaries.left, minWidth) + 'px'
+    }
+
+    if (resize.borderBottom) {
+        element.style.height = Math.max(event.clientY - boundaries.top, minHeight) + 'px'
+    }
+
+
+}
+
+function dragElement() {
+    dragAnimation = window.requestAnimationFrame(dragElement)
+
+    if (!redraw) return // nothing changed
+    redraw = false // redraw once
+}
+
+
+function isMouseOnBorder(event, element, margin = 10) {
+    element = element.getBoundingClientRect()
+
+    let x = event.clientX - element.left,
+        y = event.clientX - element.top
+
+    return {
+        borderTop: y < margin,
+        borderRight: x >= element.width - margin,
+        borderBottom: y >= element.height - margin,
+        borderLeft: x < margin
+    }
+}
+function isMouseInArea(event, element) {
+    element.getBoundingClientRect()
+
+    return  event.clientX > element.left && event.clientX < element.right &&
+            event.clientY > element.top && event.clientY < element.bottom
+}
+
+
+
+
+renderBrowser(editor, 50, 100, 400, 500, 'facebook.com', {active: true})
+renderBrowser(editor, 500, 200, 200, 350, 'youtube.com', {active: true})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //config
 function getConfigurations() {
@@ -158,8 +169,6 @@ function getConfigurations() {
     for (let i = 0; i < browsers.length; i++) {
         configurations.push(renderWindowConfig(browsers[i]))
     }
-
-    console.log(configurations)
 }
 
 
@@ -177,8 +186,6 @@ function renderWindowConfig(browserElement) {
         width: Math.round(boundaries.width * scaleFactorWidth),
         url: browserElement.querySelector("[data-url]").dataset.url
     }
-
-    console.log(browserElement.getElementsByClassName('tab'))
 
     let tabList = [];
     let tabElements = browserElement.getElementsByClassName('tab')
@@ -209,8 +216,8 @@ function renderBrowser(container, x, y, width, height, url, options = {
     let browser = document.createElement('div')
     browser.id = 'pane'
     browser.className = "browser"
-    browser.style.top = x + 'px'
     browser.style.left = x + 'px'
+    browser.style.top = y + 'px'
     browser.style.width = width + 'px'
     browser.style.height = height + 'px'
 
@@ -220,9 +227,9 @@ function renderBrowser(container, x, y, width, height, url, options = {
 
     let context = document.createElement('div')
     context.className = 'browser-context'
-    browser.addEventListener('mousemove',   (event) => { onMouseHover(event, browser) })
-    browser.addEventListener('mousedown',   (event) => { onDragStart(event, browser) })
-    browser.addEventListener('mouseup',     (event) => { onDragEnd(event, browser)})
+    // browser.addEventListener('mousemove',   (event) => { onDrag(event, browser) })
+    // browser.addEventListener('mousedown',   (event) => { onDragStart(event, browser) })
+    // document.addEventListener('mouseup',     (event) => { onDragEnd(event, browser)})
     menu.append(context)
 
     let states = document.createElement('states')
@@ -280,39 +287,20 @@ function renderBrowser(container, x, y, width, height, url, options = {
 }
 
 function urlToTitle(url) {
-    return 'convertedUrl.com'
+    return url
 }
 
-
-
-
-function scaleFactorX(container) {
-    return screen.width / container.width
-}
-function scaleFactorY(container) {
-    return screen.height / container.height
+function setActiveTabTitle(title) {
+    document.getElementById('browser-active-title').innerText = title
 }
 
 
 
 
 
-function inZone(event, boundaries) {
-
-    let borderTopPos = event.clientY - boundaries.top,
-        borderLeftPost = event.clientX - boundaries.left
-
-    return {
-
-    }
-}
-function inZoneMargin(event, boundaries, margin = 10) {
-
-}
 
 
-
-function calculateElementBorderEdges(event, element, margin = 10) {
+function getBorders(event, element, margin = 5) {
     element = element.getBoundingClientRect()
 
     let borderLeftPos = event.clientX - element.left,
@@ -415,7 +403,12 @@ function setBottomRight(boundaries, element) {
 
 
 
-
+function scaleFactorX(container) {
+    return screen.width / container.width
+}
+function scaleFactorY(container) {
+    return screen.height / container.height
+}
 
 function getElementX(container, element) {
     return container.left - element.left
@@ -424,35 +417,9 @@ function getElementY(container, element) {
     return container.top - element.top
 }
 
-function resize(window) {
-
-}
 function scaleFactor(container) {
     return {
         x: screen.width / container.width,
         y: screen.height / container.height
     }
 }
-
-
-
-// chrome.windows.create({
-//     focused: false,
-//     height: screen.height,
-//     width: screen.width / 2,
-//     incognito: true,
-//     top: 0,
-//     left: screen.width / 2,
-//     url: 'https://www.dumpert.nl?=it+works'
-// }, (window) => {
-//
-// })
-//
-// chrome.tabs.create({
-//     windowId: 1,
-//     active: true,
-//     index: 2,
-//     url: "http://localhost:8080"
-// }, (tab) => {
-//
-// })

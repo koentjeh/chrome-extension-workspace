@@ -1,0 +1,84 @@
+*{margin:0;padding:0;box-sizing:border-box}
+body{min-width: 250px;max-width:400px;overflow-y: scroll}
+.user-input {
+    position: relative;
+    height: 40px;
+    width: 100%;
+    padding: 0 40px 0 0;
+    border-bottom: 1px solid #ccc;
+}
+#recording-name {
+    height: 100%;
+    width: 100%;
+    padding: 0 10px;
+    outline: 0;
+    border: none;
+    text-transform: capitalize;
+}
+#recording-save {
+    position: absolute;
+    display: flex;
+    top: 0;
+    right: 0;
+    height: 40px;
+    width: 40px;
+    justify-content: center;
+    align-items: center;
+    background-color: deepskyblue;
+    border: none;
+    outline: 0;
+}
+#error {
+    display: none;
+    font-size: 12px;
+    padding: 10px;
+    color: #fff;
+    background-color: #FF4030;
+}
+#recordings {
+    width: 100%;
+}
+#recordings li {
+    display: flex;
+    height: 40px;
+    flex-direction: row;
+    align-items: center;
+    font-size: 14px;
+    border-bottom: 1px solid #ccc;
+    cursor: pointer;
+    text-transform: capitalize;
+    transition: .2s background-color ease-in-out;
+}
+#recordings li:hover {
+    background-color: #eee;
+}
+#recordings li .clean {
+    display: flex;
+    height: 40px;
+    width: 40px;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    background: transparent;
+    outline: 0;
+    cursor: pointer;
+
+}
+#recordings li p {
+    flex-grow: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#recordings li .delete {
+    display: flex;
+    height: 40px;
+    width: 40px;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    background: transparent;
+    outline: 0;
+    cursor: pointer;
+    flex-shrink: 0;
+}
